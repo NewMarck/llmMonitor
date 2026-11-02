@@ -1,0 +1,13 @@
+.git
+.env
+.runtime
+results
+models
+tests
+__pycache__
+.venv
+.github
+.agents
+.aws
+.codex
+docs

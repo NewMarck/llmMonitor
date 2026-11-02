@@ -1,0 +1,9 @@
+services:
+  exporter:
+    environment:
+      LLAMA_URL: http://mock-llama:8080
+  mock-llama:
+    image: python:3.12.11-alpine3.22
+    command: [python, /app/mock_llama.py]
+    volumes:
+      - ./tests/mock_llama.py:/app/mock_llama.py:ro

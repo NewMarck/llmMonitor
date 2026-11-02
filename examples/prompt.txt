@@ -1,0 +1,3 @@
+Spiega in italiano il funzionamento di un modello linguistico autoregressivo.
+Descrivi tokenizzazione, attenzione, contesto, fase di prefill e generazione.
+Usa esempi concreti e termina con tre differenze tra quantizzazione e riduzione del contesto.

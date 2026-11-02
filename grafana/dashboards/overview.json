@@ -1,0 +1,906 @@
+{
+  "uid": "llmmonitor-overview",
+  "title": "llmMonitor · llama.cpp Live",
+  "tags": [
+    "llmMonitor",
+    "llama.cpp"
+  ],
+  "schemaVersion": 41,
+  "version": 1,
+  "editable": false,
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "server",
+        "label": "Server",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": "label_values(up{job=\"llama\"}, server)",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": []
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "title": "llama.cpp · Live",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 4
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Metriche native del server, campionate ogni 5 secondi. **DOWN**: controlla `--metrics`, URL e log exporter. I pannelli senza dati indicano metriche non esposte dalla versione in uso. I throughput nativi si aggiornano quando llama.cpp pubblica i dati delle richieste; non sono misure per singolo token."
+      },
+      "id": 1
+    },
+    {
+      "title": "Server raggiungibile",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 4,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=\"llama\",server=~\"$server\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 2
+    },
+    {
+      "title": "Prefill · token/s",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 4,
+        "y": 4,
+        "w": 4,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:prompt_tokens_seconds{job=\"llama\",server=~\"$server\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:tok/s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 3
+    },
+    {
+      "title": "Generazione · token/s",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 4,
+        "w": 4,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:predicted_tokens_seconds{job=\"llama\",server=~\"$server\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:tok/s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 4
+    },
+    {
+      "title": "Richieste attive",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 4,
+        "w": 4,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:requests_processing{job=\"llama\",server=~\"$server\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 5
+    },
+    {
+      "title": "Richieste in coda",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 4,
+        "w": 4,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:requests_deferred{job=\"llama\",server=~\"$server\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 6
+    },
+    {
+      "title": "Contesto massimo osservato",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 4,
+        "w": 4,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:n_tokens_max{job=\"llama\",server=~\"$server\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 7
+    },
+    {
+      "title": "Throughput prefill",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:prompt_tokens_seconds{job=\"llama\",server=~\"$server\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:tok/s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 8
+    },
+    {
+      "title": "Throughput generazione",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:predicted_tokens_seconds{job=\"llama\",server=~\"$server\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:tok/s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 9
+    },
+    {
+      "title": "Richieste attive e in attesa",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{job=\"llama\",server=~\"$server\",__name__=~\"llamacpp:requests_(processing|deferred)\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 10
+    },
+    {
+      "title": "Token elaborati al secondo · media finestra",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 17,
+        "w": 12,
+        "h": 8
+      },
+      "description": "Rate del contatore prompt; include i periodi di inattività.",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(llamacpp:prompt_tokens_total{job=\"llama\",server=~\"$server\"}[$__rate_interval])",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:tok/s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 11
+    },
+    {
+      "title": "Token generati al secondo · media finestra",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(llamacpp:tokens_predicted_total{job=\"llama\",server=~\"$server\"}[$__rate_interval])",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:tok/s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 12
+    },
+    {
+      "title": "Secondi spesi in prefill e decode al secondo",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 25,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate({job=\"llama\",server=~\"$server\",__name__=~\"llamacpp:(prompt_seconds_total|tokens_predicted_seconds_total)\"}[$__rate_interval])",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 13
+    },
+    {
+      "title": "Chiamate decode al secondo",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 33,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(llamacpp:n_decode_total{job=\"llama\",server=~\"$server\"}[$__rate_interval])",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 14
+    },
+    {
+      "title": "Slot occupati medi per decode",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 33,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:n_busy_slots_per_decode{job=\"llama\",server=~\"$server\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 15
+    },
+    {
+      "title": "KV cache · se esposta dalla versione",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 41,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:kv_cache_usage_ratio{job=\"llama\",server=~\"$server\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 16
+    },
+    {
+      "title": "KV cache token · se esposta dalla versione",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 41,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llamacpp:kv_cache_tokens{job=\"llama\",server=~\"$server\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 17
+    },
+    {
+      "title": "Tutte le metriche native · valori attuali",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 49,
+        "w": 24,
+        "h": 12
+      },
+      "description": "Nessuna allowlist: include automaticamente tutte le metriche native llamacpp: della versione installata.",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{job=\"llama\",server=~\"$server\",__name__=~\"llamacpp:.*\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 18
+    }
+  ],
+  "links": [
+    {
+      "type": "dashboards",
+      "title": "llmMonitor",
+      "tags": [
+        "llmMonitor"
+      ],
+      "asDropdown": true,
+      "includeVars": true
+    }
+  ]
+}

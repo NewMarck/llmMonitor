@@ -1,0 +1,592 @@
+{
+  "uid": "llmmonitor-home",
+  "title": "llmMonitor · Home",
+  "tags": [
+    "llmMonitor",
+    "llama.cpp"
+  ],
+  "schemaVersion": 41,
+  "version": 1,
+  "editable": false,
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "title": "llmMonitor · Il tuo laboratorio locale",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 5
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Apri [Hardware](/d/llmmonitor-hardware) per GPU e RAM, [Benchmark](/d/llmmonitor-benchmarks) per i test salvati, oppure [llama.cpp Live](/d/llmmonitor-overview) per il server. **Avviare Grafana non avvia il modello.** Il server deve essere attivo con `--metrics` per mostrare dati di inferenza. Se Exporter è offline, esegui `diagnose` dagli script del progetto."
+      },
+      "id": 1
+    },
+    {
+      "title": "Exporter raggiungibile",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 6,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=\"llmmonitor\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "FERMO",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "ATTIVO",
+                  "color": "green"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "red"
+              },
+              {
+                "value": 1,
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 2
+    },
+    {
+      "title": "Collector hardware attivo",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 5,
+        "w": 6,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_host_collector_up",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "FERMO",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "ATTIVO",
+                  "color": "green"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "red"
+              },
+              {
+                "value": 1,
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 3
+    },
+    {
+      "title": "Server llama.cpp raggiungibile",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 6,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=\"llama\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "FERMO",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "ATTIVO",
+                  "color": "green"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "red"
+              },
+              {
+                "value": 1,
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 4
+    },
+    {
+      "title": "Benchmark riusciti salvati",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 5,
+        "w": 6,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "count(llmmonitor_run_status == 1) or vector(0)",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 5
+    },
+    {
+      "title": "GPU · utilizzo",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_gpu_utilization_ratio",
+          "legendFormat": "GPU {{gpu}} · {{name}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 6
+    },
+    {
+      "title": "GPU · VRAM",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_gpu_memory_used_bytes",
+          "legendFormat": "GPU {{gpu}} · {{name}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 7
+    },
+    {
+      "title": "RAM host utilizzata",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_host_memory_total_bytes - llmmonitor_host_memory_available_bytes",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 8
+    },
+    {
+      "title": "GPU · temperatura",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 18,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_gpu_temperature_celsius",
+          "legendFormat": "GPU {{gpu}} · {{name}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 9
+    },
+    {
+      "title": "Benchmark nativi salvati · token/s",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 24,
+        "h": 10
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_bench_avg_ts",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:tok/s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 10
+    },
+    {
+      "title": "Se non compaiono dati",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 36,
+        "w": 24,
+        "h": 5
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "**GPU/RAM:** il collector deve essere attivo (`collect` oppure `up`). **Benchmark:** apri la dashboard Benchmark; i risultati sono letti da `results/`. **Modello:** avvia llama-server con `--metrics`, poi genera traffico con `load`. Un benchmark `llama-bench` offline non alimenta le metriche del server HTTP. Per diagnosticare il collegamento esegui `diagnose`."
+      },
+      "id": 11
+    }
+  ],
+  "links": [
+    {
+      "type": "dashboards",
+      "title": "llmMonitor",
+      "tags": [
+        "llmMonitor"
+      ],
+      "asDropdown": true,
+      "includeVars": true
+    }
+  ]
+}

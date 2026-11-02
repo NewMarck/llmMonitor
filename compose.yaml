@@ -1,0 +1,80 @@
+name: llmmonitor
+services:
+  grafana:
+    build:
+      context: .
+      dockerfile: docker/grafana.Dockerfile
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-3000}:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Esegui prima scripts/llm-monitor setup}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
+      GF_PLUGINS_PREINSTALL_DISABLED: "true"
+      GF_PLUGINS_PUBLIC_KEY_RETRIEVAL_DISABLED: "true"
+      GF_PLUGINS_PUBLIC_KEY_RETRIEVAL_ON_STARTUP: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/dashboards/home.json
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
+    healthcheck:
+      test: [CMD-SHELL, "wget -q -O /dev/null http://127.0.0.1:3000/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    restart: unless-stopped
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-15d}
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    healthcheck:
+      test: [CMD-SHELL, "wget -q -O /dev/null http://127.0.0.1:9090/-/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    depends_on:
+      exporter:
+        condition: service_healthy
+    restart: unless-stopped
+  exporter:
+    build:
+      context: .
+      dockerfile: docker/exporter.Dockerfile
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    environment:
+      LLAMA_URL: ${LLAMA_URL:-http://host.docker.internal:8080}
+      LLAMA_API_KEY: ${LLAMA_API_KEY:-}
+      LLAMA_METRICS_MODEL: ${LLAMA_METRICS_MODEL:-}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ./results:/data/results:ro
+      - ./.runtime:/data/runtime:ro
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9108/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+volumes:
+  grafana-data:
+  prometheus-data:

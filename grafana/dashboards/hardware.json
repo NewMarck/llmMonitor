@@ -1,0 +1,693 @@
+{
+  "uid": "llmmonitor-hardware",
+  "title": "llmMonitor · Hardware",
+  "tags": [
+    "llmMonitor",
+    "llama.cpp"
+  ],
+  "schemaVersion": 41,
+  "version": 1,
+  "editable": false,
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "title": "Hardware host",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 4
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Il collector gira sull'host e scrive uno snapshot condiviso con Docker. **Collector = 0**: dati assenti o più vecchi di 15 secondi. CPU, RAM e processo vengono letti tramite psutil. GPU NVIDIA tramite `nvidia-smi`, solo per le misure supportate. Le risorse WSL si riferiscono all'ambiente Linux. Durante `bench` il processo osservato passa a llama-bench. Le GPU Apple non espongono le metriche NVIDIA: quei pannelli restano senza dati."
+      },
+      "id": 1
+    },
+    {
+      "title": "Collector attivo",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 6,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_host_collector_up",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 2
+    },
+    {
+      "title": "CPU host",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 4,
+        "w": 6,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_host_cpu_usage_ratio",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 3
+    },
+    {
+      "title": "RAM host utilizzata",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 4,
+        "w": 6,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_host_memory_total_bytes - llmmonitor_host_memory_available_bytes",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 4
+    },
+    {
+      "title": "RAM processo",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 4,
+        "w": 6,
+        "h": 5
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_process_resident_memory_bytes",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "id": 5
+    },
+    {
+      "title": "CPU host",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_host_cpu_usage_ratio",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 6
+    },
+    {
+      "title": "RAM host utilizzata",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_host_memory_total_bytes - llmmonitor_host_memory_available_bytes",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 7
+    },
+    {
+      "title": "CPU processo · core occupati",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 12,
+        "h": 8
+      },
+      "description": "1 = un core al 100%. Può superare 1. Richiede server gestito, bench o collect --pid PID.",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_process_cpu_cores",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 8
+    },
+    {
+      "title": "RAM processo",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 17,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_process_resident_memory_bytes",
+          "legendFormat": "{{__name__}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 9
+    },
+    {
+      "title": "GPU utilizzo",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_gpu_utilization_ratio",
+          "legendFormat": "GPU {{gpu}} · {{name}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 10
+    },
+    {
+      "title": "GPU VRAM utilizzata",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 25,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_gpu_memory_used_bytes",
+          "legendFormat": "GPU {{gpu}} · {{name}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 11
+    },
+    {
+      "title": "GPU temperatura",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 33,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_gpu_temperature_celsius",
+          "legendFormat": "GPU {{gpu}} · {{name}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 12
+    },
+    {
+      "title": "GPU potenza",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 33,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_gpu_power_watts",
+          "legendFormat": "GPU {{gpu}} · {{name}}",
+          "instant": false,
+          "range": true,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 13
+    },
+    {
+      "title": "Tutte le misure hardware disponibili",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 41,
+        "w": 24,
+        "h": 10
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{__name__=~\"llmmonitor_(host|process|gpu)_.*\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 14
+    }
+  ],
+  "links": [
+    {
+      "type": "dashboards",
+      "title": "llmMonitor",
+      "tags": [
+        "llmMonitor"
+      ],
+      "asDropdown": true,
+      "includeVars": true
+    }
+  ]
+}

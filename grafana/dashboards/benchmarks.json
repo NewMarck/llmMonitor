@@ -1,0 +1,662 @@
+{
+  "uid": "llmmonitor-benchmarks",
+  "title": "llmMonitor · Benchmark",
+  "tags": [
+    "llmMonitor",
+    "llama.cpp"
+  ],
+  "schemaVersion": 41,
+  "version": 1,
+  "editable": false,
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "model",
+        "label": "Model",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": "label_values(llmmonitor_run_status, model)",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": []
+      },
+      {
+        "name": "run_id",
+        "label": "Run Id",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": "label_values(llmmonitor_run_status{model=~\"$model\"}, run_id)",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": []
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "title": "Laboratorio benchmark",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 4
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Run salvate su disco: `bench` misura prefill/decode nativi; `load` misura il servizio HTTP sotto carico. Filtra **run** e **modello** e confronta configurazioni omogenee. I valori delle run sono risultati salvati, non throughput live. Stato: **1** successo, **0** in corso, **-1** fallita, **-2** interrotta. I risultati restano visibili finché conservati in `results/`."
+      },
+      "id": 1
+    },
+    {
+      "title": "Stato delle run",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 7
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_run_status{run_id=~\"$run_id\",model=~\"$model\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 2
+    },
+    {
+      "title": "Confronto configurazioni · token/s",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 11,
+        "w": 24,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_bench_avg_ts{run_id=~\"$run_id\",model=~\"$model\"}",
+          "legendFormat": "{{model}} · {{test}} · {{threads}} thread · {{run_id}}",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:tok/s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "id": 3
+    },
+    {
+      "title": "llama-bench · token/s per modello e configurazione",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 19,
+        "w": 24,
+        "h": 10
+      },
+      "description": "pp = prompt processing; tg = token generation. case distingue tutte le combinazioni originali.",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_bench_avg_ts{run_id=~\"$run_id\",model=~\"$model\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:tok/s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 4
+    },
+    {
+      "title": "llama-bench · deviazione standard token/s",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 24,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_bench_stddev_ts{run_id=~\"$run_id\",model=~\"$model\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:tok/s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 5
+    },
+    {
+      "title": "HTTP · throughput aggregato",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 37,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_http_throughput_tokens_seconds{run_id=~\"$run_id\",model=~\"$model\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:tok/s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 6
+    },
+    {
+      "title": "HTTP · latenza p95",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 37,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_http_latency_seconds_p95{run_id=~\"$run_id\",model=~\"$model\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 7
+    },
+    {
+      "title": "HTTP · tempo al primo token p95",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 45,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_http_ttft_seconds_p95{run_id=~\"$run_id\",model=~\"$model\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 8
+    },
+    {
+      "title": "HTTP · richieste fallite",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 45,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_http_errors{run_id=~\"$run_id\",model=~\"$model\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 9
+    },
+    {
+      "title": "HTTP · latenza p50",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 53,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "llmmonitor_http_latency_seconds_p50{run_id=~\"$run_id\",model=~\"$model\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 10
+    },
+    {
+      "title": "Fine run",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 53,
+        "w": 12,
+        "h": 8
+      },
+      "description": "",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "1000 * llmmonitor_run_finished_timestamp_seconds{run_id=~\"$run_id\",model=~\"$model\"}",
+          "legendFormat": "{{__name__}}",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dateTimeFromNow",
+          "decimals": 2,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "job": true,
+              "instance": true
+            }
+          }
+        }
+      ],
+      "id": 11
+    }
+  ],
+  "links": [
+    {
+      "type": "dashboards",
+      "title": "llmMonitor",
+      "tags": [
+        "llmMonitor"
+      ],
+      "asDropdown": true,
+      "includeVars": true
+    }
+  ]
+}
